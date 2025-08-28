@@ -31,7 +31,7 @@ public class TaskServiceImpl implements ITaskService {
         taskDto.setTitle(task.getTitle());
         taskDto.setDescription(task.getDescription());
         taskDto.setDeadline(task.getDeadline());
-        taskDto.setCompleted(task.getCompleted());
+        taskDto.setIsCompleted(task.getIsCompleted());
         taskDto.setDeletedAt(task.getDeletedAt());
         return taskDto;
     }
