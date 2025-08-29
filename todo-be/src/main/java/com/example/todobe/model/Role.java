@@ -1,11 +1,14 @@
 package com.example.todobe.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.Set;
 
 @Entity
 @Table(name="\"role\"")
+@Getter
+@Setter
 public class Role {
 
     @Id
