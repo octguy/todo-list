@@ -32,11 +32,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER) // Should avoid EAGER fetch in real projects
     @JoinTable(
             name = "role_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles = new HashSet<>(); // Use hashset (mutable set)
 }
