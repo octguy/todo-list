@@ -3,6 +3,8 @@ package com.example.todobe.service.implementation;
 import com.example.todobe.dto.request.LoginRequest;
 import com.example.todobe.dto.request.RegisterRequest;
 import com.example.todobe.dto.response.AuthResponse;
+import com.example.todobe.exception.BadRequestException;
+import com.example.todobe.exception.ResourceNotFoundException;
 import com.example.todobe.jwt.JwtUtil;
 import com.example.todobe.model.Role;
 import com.example.todobe.model.User;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -45,7 +48,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
-        // Authenticate user
+        // Authenticate user (automatically throw BadCredentialsException if authentication fails)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -56,11 +59,11 @@ public class AuthServiceImpl implements IAuthService {
         // Get user details
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bad credentials"));
 
         Set<Integer> roleIds = user.getRoles().stream()
                 .map(Role::getRoleId)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
         // Generate JWT token
         String token = jwtUtil.generateToken(userDetails);
@@ -77,11 +80,11 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public AuthResponse register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email is already in use");
+            throw new BadRequestException("Email is already in use");
         }
 
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new RuntimeException("Username is already taken");
+            throw new BadRequestException("Email is already in use");
         }
 
         Role userRole = roleRepository.findByName("ROLE_USER")
@@ -103,7 +106,7 @@ public class AuthServiceImpl implements IAuthService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .accessToken(token)
-                .roleIds(user.getRoles().stream().map(Role::getRoleId).collect(java.util.stream.Collectors.toSet()))
+                .roleIds(user.getRoles().stream().map(Role::getRoleId).collect(Collectors.toSet()))
                 .build();
     }
 }
