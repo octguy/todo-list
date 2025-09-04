@@ -4,14 +4,12 @@ import com.example.todobe.dto.request.LoginRequest;
 import com.example.todobe.dto.request.RegisterRequest;
 import com.example.todobe.dto.response.AuthResponse;
 import com.example.todobe.model.ApiResponse;
+import com.example.todobe.model.User;
 import com.example.todobe.service.IAuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -48,4 +46,19 @@ public class AuthController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser() {
+        AuthResponse user = authService.getCurrentUser();
+
+        ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Current user retrieved successfully",
+                user,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

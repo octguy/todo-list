@@ -6,6 +6,7 @@ import com.example.todobe.dto.response.AuthResponse;
 import com.example.todobe.exception.BadRequestException;
 import com.example.todobe.exception.ResourceNotFoundException;
 import com.example.todobe.jwt.JwtUtil;
+import com.example.todobe.model.CustomUserDetails;
 import com.example.todobe.model.Role;
 import com.example.todobe.model.User;
 import com.example.todobe.repository.RoleRepository;
@@ -14,6 +15,7 @@ import com.example.todobe.service.IAuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +46,6 @@ public class AuthServiceImpl implements IAuthService {
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
     }
-
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
@@ -107,6 +108,20 @@ public class AuthServiceImpl implements IAuthService {
                 .email(user.getEmail())
                 .accessToken(token)
                 .roleIds(user.getRoles().stream().map(Role::getRoleId).collect(Collectors.toSet()))
+                .build();
+    }
+
+    @Override
+    public AuthResponse getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User currentUser = customUserDetails.getUser();
+
+        return AuthResponse.builder()
+                .userId(currentUser.getUserId())
+                .username(currentUser.getUsername())
+                .email(currentUser.getEmail())
+                .roleIds(currentUser.getRoles().stream().map(Role::getRoleId).collect(Collectors.toSet()))
                 .build();
     }
 }
