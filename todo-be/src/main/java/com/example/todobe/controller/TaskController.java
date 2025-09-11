@@ -2,6 +2,7 @@ package com.example.todobe.controller;
 
 import com.example.todobe.dto.TaskDto;
 import com.example.todobe.dto.request.CreateTaskRequest;
+import com.example.todobe.dto.request.UpdateTaskRequest;
 import com.example.todobe.model.ApiResponse;
 import com.example.todobe.service.ITaskService;
 import jakarta.validation.Valid;
@@ -58,5 +59,31 @@ public class TaskController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<TaskDto>> updateTask(@PathVariable Integer id, @RequestBody @Valid UpdateTaskRequest request) {
+        TaskDto task = taskService.updateTask(id, request);
+        ApiResponse<TaskDto> apiResponse = new ApiResponse<>(
+                HttpStatus.OK,
+                "Task updated successfully",
+                task,
+                null
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable Integer id) {
+        taskService.deleteTask(id);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.NO_CONTENT,
+                "Task deleted successfully",
+                null,
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
     }
 }

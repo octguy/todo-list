@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/create-admin").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasRole("USER")
+                        .requestMatchers("/api/tasks/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))

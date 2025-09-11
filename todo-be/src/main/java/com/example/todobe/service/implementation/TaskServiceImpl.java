@@ -2,6 +2,7 @@ package com.example.todobe.service.implementation;
 
 import com.example.todobe.dto.TaskDto;
 import com.example.todobe.dto.request.CreateTaskRequest;
+import com.example.todobe.dto.request.UpdateTaskRequest;
 import com.example.todobe.exception.ResourceNotFoundException;
 import com.example.todobe.model.Task;
 import com.example.todobe.model.User;
@@ -10,6 +11,7 @@ import com.example.todobe.service.IAuthService;
 import com.example.todobe.service.ITaskService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,5 +71,40 @@ public class TaskServiceImpl implements ITaskService {
 
         Task savedTask = taskRepository.save(task);
         return mapToDto(savedTask);
+    }
+
+    @Override
+    public TaskDto updateTask(Integer taskId, UpdateTaskRequest request) {
+        User currentUser = authService.getCurrentUser();
+
+        Task task = taskRepository.findByTaskIdAndUser(taskId, currentUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        if (request.getTitle() != null) {
+            task.setTitle(request.getTitle());
+        }
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+        if (request.getDeadline() != null) {
+            task.setDeadline(request.getDeadline());
+        }
+        if (request.getIsCompleted() != null) {
+            task.setIsCompleted(request.getIsCompleted());
+        }
+
+        Task updatedTask = taskRepository.save(task);
+        return mapToDto(updatedTask);
+    }
+
+    @Override
+    public void deleteTask(Integer id) {
+        User currentUser = authService.getCurrentUser();
+        Task task = taskRepository.findByTaskIdAndUser(id, currentUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        // soft delete
+        task.setDeletedAt(LocalDateTime.now());
+        taskRepository.save(task);
     }
 }
