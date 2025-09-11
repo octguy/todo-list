@@ -112,16 +112,10 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public AuthResponse getCurrentUser() {
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        User currentUser = customUserDetails.getUser();
 
-        return AuthResponse.builder()
-                .userId(currentUser.getUserId())
-                .username(currentUser.getUsername())
-                .email(currentUser.getEmail())
-                .roleIds(currentUser.getRoles().stream().map(Role::getRoleId).collect(Collectors.toSet()))
-                .build();
+        return customUserDetails.getUser();
     }
 }

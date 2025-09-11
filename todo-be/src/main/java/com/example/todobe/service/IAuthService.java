@@ -11,5 +11,5 @@ public interface IAuthService {
 
     AuthResponse register(RegisterRequest registerRequest);
 
-    AuthResponse getCurrentUser();
+    User getCurrentUser();
 }

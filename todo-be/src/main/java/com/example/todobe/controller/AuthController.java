@@ -47,18 +47,5 @@ public class AuthController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser() {
-        AuthResponse user = authService.getCurrentUser();
-
-        ApiResponse<AuthResponse> apiResponse = new ApiResponse<>(
-                HttpStatus.OK,
-                "Current user retrieved successfully",
-                user,
-                null
-        );
-
-        return ResponseEntity.ok(apiResponse);
-    }
 
 }
