@@ -39,9 +39,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>(); // Use hashset (mutable set)
-
-    @Column(name="dummy", length = 60)
-    private String dummy;
-
-//    @Column(name="concak")
 }
