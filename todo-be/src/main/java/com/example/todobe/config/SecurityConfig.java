@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -38,8 +43,24 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**",
                                 "/swagger-ui/**",
@@ -60,4 +81,20 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    /**
+     * Key changes:
+     *
+     *
+     * Added corsConfigurationSource() bean that explicitly configures CORS
+     * Added .cors(cors -> cors.configurationSource(corsConfigurationSource())) to the security filter chain before .csrf()
+     * This ensures Spring Security applies CORS settings before checking authentication
+     * Why /api/auth worked but /api/tasks didn't:
+     *
+     *
+     * /api/auth/** is permitted for all requests (no authentication required)
+     * /api/tasks/** requires authentication, so Spring Security intercepts the request
+     * Without explicit CORS configuration in Security, the preflight OPTIONS request is blocked
+     * The WebConfig CORS settings are applied at the MVC layer, but Spring Security filters run before that, which is why you need CORS configuration in both places or just in SecurityConfig.
+     */
 }
