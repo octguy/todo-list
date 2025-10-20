@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import type { RegisterRequest } from '../models/Auth';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import type { RegisterRequest } from "../models/Auth";
+import { useAuth } from "../hooks/useAuth";
+import axios from "axios";
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -8,19 +9,19 @@ interface RegisterProps {
 
 const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState<RegisterRequest>({
-    username: '',
-    email: '',
-    password: '',
+    username: "",
+    email: "",
+    password: "",
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const { register } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -29,13 +30,18 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       await register(formData);
     } catch (err) {
-      console.error(err);
-      setError('Registration failed. Please try again.');
+      if (axios.isAxiosError(err)) {
+        console.log("err as AxiosError", err);
+        setError(err.response?.data?.message);
+      } else {
+        console.log("err not AxiosError", err);
+        setError("Something went wrong");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -43,8 +49,10 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Sign Up</h2>
-      
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        Sign Up
+      </h2>
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -53,7 +61,10 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Username
           </label>
           <input
@@ -69,7 +80,10 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Email
           </label>
           <input
@@ -85,7 +99,10 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Password
           </label>
           <input
@@ -99,7 +116,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
             placeholder="Enter your password"
           />
           <p className="text-xs text-gray-500 mt-1">
-            Password must contain at least 8 characters, 1 number, 1 special character, and 1 uppercase letter
+            Password must contain at least 8 characters, 1 number, 1 special
+            character, and 1 uppercase letter
           </p>
         </div>
 
@@ -108,13 +126,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
           disabled={isLoading}
           className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
         >
-          {isLoading ? 'Creating account...' : 'Create Account'}
+          {isLoading ? "Creating account..." : "Create Account"}
         </button>
       </form>
 
       <div className="mt-6 text-center">
         <p className="text-gray-600">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <button
             onClick={onSwitchToLogin}
             className="text-blue-500 hover:text-blue-600 font-medium"

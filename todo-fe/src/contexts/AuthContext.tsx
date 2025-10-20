@@ -1,7 +1,11 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
-import type { AuthResponse, LoginRequest, RegisterRequest } from '../models/Auth';
-import { storageService } from '../utils/token';
-import { authService } from '../services/authService';
+import React, { createContext, useState, useEffect, useCallback } from "react";
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+} from "../models/Auth";
+import { storageService } from "../utils/token";
+import { authService } from "../services/authService";
 
 interface AuthContextType {
   user: AuthResponse | null;
@@ -11,42 +15,37 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<AuthResponse | null>(null);
 
   useEffect(() => {
     const storedUser = storageService.getUser();
     const storedToken = storageService.getAccessToken();
-    
+
     if (storedUser && storedToken) {
       setUser(storedUser);
     }
   }, []);
 
   const login = useCallback(async (credentials: LoginRequest) => {
-    try {
-      const response = await authService.login(credentials);
-      setUser(response.data);
-      storageService.setUser(response.data);
-      storageService.setAccessToken(response.data.accessToken);
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
-    }
+    const response = await authService.login(credentials);
+    console.log(response.data);
+    setUser(response.data);
+    storageService.setUser(response.data);
+    storageService.setAccessToken(response.data.accessToken);
   }, []);
 
   const register = useCallback(async (userData: RegisterRequest) => {
-    try {
-      const response = await authService.register(userData);
-      setUser(response.data);
-      storageService.setUser(response.data);
-      storageService.setAccessToken(response.data.accessToken);
-    } catch (error) {
-      console.error("Registration failed:", error);
-      throw error;
-    }
+    const response = await authService.register(userData);
+    setUser(response.data);
+    storageService.setUser(response.data);
+    storageService.setAccessToken(response.data.accessToken);
   }, []);
 
   const logout = () => {
@@ -57,7 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, register, isAuthenticated }}
+    >
       {children}
     </AuthContext.Provider>
   );
