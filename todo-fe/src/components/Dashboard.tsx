@@ -2,13 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import TaskList from "./Task/TaskList";
 import TaskModal from "./Task/TaskModal";
-import type { CreateTaskRequest, TaskResponse } from "../models/Task";
+import type {
+  CreateTaskRequest,
+  TaskResponse,
+  UpdateTaskRequest,
+} from "../models/Task";
 import { taskService } from "../services/taskService";
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
+  const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
   // const [isLoading, setIsLoading] = useState(false);
 
   const fetchTasks = async () => {
@@ -36,6 +41,31 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error("Error creating task:", error);
     }
+  };
+
+  const handleEdit = (task: TaskResponse) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateTask = async (
+    taskId: number,
+    updatedTask: UpdateTaskRequest
+  ) => {
+    console.log("hello");
+    // try {
+    //   await taskService.updateTask(taskId, updatedTask);
+    //   await fetchTasks(); // Re-fetch tasks after successful update
+    //   setIsModalOpen(false); // Close modal on success
+    //   setSelectedTask(null); // Clear selected task
+    // } catch (error) {
+    //   console.error("Error updating task:", error);
+    // }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
   };
 
   return (
@@ -76,22 +106,27 @@ const Dashboard: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-700">Tasks</h2>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  setSelectedTask(null);
+                  setIsModalOpen(true);
+                }}
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center gap-2"
               >
                 <span className="text-xl">+</span>
                 Add Task
               </button>
             </div>
-            <TaskList tasks={tasks} />
+            <TaskList tasks={tasks} onEdit={handleEdit} />
           </div>
         </div>
       </div>
 
       <TaskModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAddTask}
+        onClose={handleModalClose}
+        onSubmitCreate={handleAddTask}
+        onSubmitUpdate={handleUpdateTask}
+        initialTask={selectedTask}
       />
     </div>
   );

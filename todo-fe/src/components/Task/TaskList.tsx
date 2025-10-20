@@ -4,10 +4,10 @@ import type { TaskResponse } from "../../models/Task";
 interface TaskListProps {
   tasks: TaskResponse[];
   onEdit?: (task: TaskResponse) => void;
-  onDelete?: (taskId: number) => void;
+  // onDelete?: (taskId: number) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit, onDelete }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit }) => {
   if (tasks.length === 0) {
     return <div>No tasks found</div>;
   }
@@ -73,7 +73,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit, onDelete }) => {
                     </svg>
                   </button>
                   <button
-                    onClick={() => onDelete?.(task.taskId)}
+                    onClick={() => console.log("Delete", task.taskId)}
                     className="text-red-600 hover:text-red-800 transition-colors"
                     title="Delete task"
                   >

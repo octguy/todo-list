@@ -13,3 +13,10 @@ export interface TaskResponse {
   isCompleted: boolean;
   deletedAt: Date | null;
 }
+
+export interface UpdateTaskRequest {
+  title?: string;
+  description?: string;
+  deadline?: Date;
+  isCompleted?: boolean;
+}
