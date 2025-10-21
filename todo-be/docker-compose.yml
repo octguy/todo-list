@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todo-be-container
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - my-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: todo-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: octguy
+      POSTGRES_DB: todo-app
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - my-network
+volumes:
+  pgdata:
+
+networks:
+  my-network:
+    driver: bridge

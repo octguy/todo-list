@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface IRoleService {
 
-    // List<Role> findAllRoles();
+    List<Role> findAll();
+
+    void createNewRole(String roleName);
 }
