@@ -53,14 +53,15 @@ const Dashboard: React.FC = () => {
     updatedTask: UpdateTaskRequest
   ) => {
     console.log("hello");
-    // try {
-    //   await taskService.updateTask(taskId, updatedTask);
-    //   await fetchTasks(); // Re-fetch tasks after successful update
-    //   setIsModalOpen(false); // Close modal on success
-    //   setSelectedTask(null); // Clear selected task
-    // } catch (error) {
-    //   console.error("Error updating task:", error);
-    // }
+    console.log("Update task:", taskId, updatedTask);
+    try {
+      await taskService.updateTask(taskId, updatedTask);
+      await fetchTasks(); // Re-fetch tasks after successful update
+      setIsModalOpen(false); // Close modal on success
+      setSelectedTask(null); // Clear selected task
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   const handleModalClose = () => {

@@ -42,6 +42,7 @@ public class TaskServiceImpl implements ITaskService {
     public List<TaskDto> getAllTasks() {
         User currentUser = authService.getCurrentUser();
 
+        System.out.println("Current User ID: " + currentUser.getUserId() + " just get their all tasks.");
         return taskRepository.findByUser(currentUser)
                 .stream()
                 .map(this::mapToDto)
@@ -70,6 +71,8 @@ public class TaskServiceImpl implements ITaskService {
         task.setUser(currentUser);
 
         Task savedTask = taskRepository.save(task);
+
+        System.out.println("User ID: " + currentUser.getUserId() + " just create their new task (Task ID: " + savedTask.getTaskId() + ").");
         return mapToDto(savedTask);
     }
 
@@ -94,6 +97,9 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         Task updatedTask = taskRepository.save(task);
+
+        System.out.println("User ID: " + currentUser.getUserId() + " just update their task (Task ID: " + updatedTask.getTaskId() + ").");
+
         return mapToDto(updatedTask);
     }
 
