@@ -3,11 +3,11 @@ import type { TaskResponse } from "../../models/Task";
 
 interface TaskListProps {
   tasks: TaskResponse[];
-  onEdit?: (task: TaskResponse) => void;
-  // onDelete?: (taskId: number) => void;
+  onEdit: (task: TaskResponse) => void;
+  onDelete: (task: TaskResponse) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit, onDelete }) => {
   if (tasks.length === 0) {
     return <div>No tasks found</div>;
   }
@@ -53,8 +53,8 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit }) => {
               <td className="px-6 py-4">
                 <div className="flex gap-2">
                   <button
-                    onClick={() => onEdit?.(task)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    onClick={() => onEdit(task)}
+                    className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
                     title="Edit task"
                   >
                     <svg
@@ -73,8 +73,8 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit }) => {
                     </svg>
                   </button>
                   <button
-                    onClick={() => console.log("Delete", task.taskId)}
-                    className="text-red-600 hover:text-red-800 transition-colors"
+                    onClick={() => onDelete(task)}
+                    className="text-red-600 hover:text-red-800 transition-colors cursor-pointer"
                     title="Delete task"
                   >
                     <svg

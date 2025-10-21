@@ -8,12 +8,14 @@ import type {
   UpdateTaskRequest,
 } from "../models/Task";
 import { taskService } from "../services/taskService";
+import DeleteModal from "./Task/DeleteModal";
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
   const fetchTasks = async () => {
@@ -48,6 +50,12 @@ const Dashboard: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const handleDelete = (task: TaskResponse) => {
+    setSelectedTask(task);
+    setIsDeleteModalOpen(true);
+    console.log("Choose task to delete: ", task.taskId);
+  };
+
   const handleUpdateTask = async (
     taskId: number,
     updatedTask: UpdateTaskRequest
@@ -64,8 +72,17 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleDeleteTask = async (taskId: number) => {
+    console.log("Delete task with ID: ", taskId);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
     setSelectedTask(null);
   };
 
@@ -117,7 +134,11 @@ const Dashboard: React.FC = () => {
                 Add Task
               </button>
             </div>
-            <TaskList tasks={tasks} onEdit={handleEdit} />
+            <TaskList
+              tasks={tasks}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           </div>
         </div>
       </div>
@@ -128,6 +149,13 @@ const Dashboard: React.FC = () => {
         onSubmitCreate={handleAddTask}
         onSubmitUpdate={handleUpdateTask}
         initialTask={selectedTask}
+      />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onDelete={handleDeleteTask}
+        taskOnDelete={selectedTask}
       />
     </div>
   );
