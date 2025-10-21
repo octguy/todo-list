@@ -73,6 +73,15 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeleteTask = async (taskId: number) => {
+    try {
+      await taskService.deleteTask(taskId);
+      await fetchTasks();
+      setIsDeleteModalOpen(false);
+      setSelectedTask(null);
+    } catch (err) {
+      console.log("Unexpected error when deleting task", err);
+    }
+
     console.log("Delete task with ID: ", taskId);
   };
 

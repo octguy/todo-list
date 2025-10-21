@@ -32,4 +32,9 @@ export const taskService = {
     );
     return response.data;
   },
+
+  async deleteTask(taskId: number): Promise<ApiResponse<void>> {
+    const response = await api.delete<ApiResponse<void>>(`/tasks/${taskId}`);
+    return response.data;
+  },
 };
