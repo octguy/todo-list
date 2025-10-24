@@ -19,7 +19,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeRoles() {
-        System.out.println("Current roles in the system:");
+//        System.out.println("Current roles in the system:");
         if (roleService.findAll().isEmpty()) {
             roleService.createNewRole("USER");
             roleService.createNewRole("ADMIN");
